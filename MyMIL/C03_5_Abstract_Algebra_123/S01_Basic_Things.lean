@@ -27,7 +27,6 @@ end Axioms_of_Groups
 
 section How_To_Define_a_Group
 
---
 -- Things introduced here will be further elaborated later this week.
 
 end How_To_Define_a_Group

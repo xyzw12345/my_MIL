@@ -9,10 +9,10 @@ def RootsOfUnity : Set ℂ := {x | ∃ n : ℕ, n > 0 ∧ x ^ n = 1}
 noncomputable instance : Group (RootsOfUnity) where
   mul := by
     intro ⟨x, hx⟩ ⟨y, hy⟩
-    use x*y
+    use x * y
     rcases hx with ⟨n, np, hx⟩
     rcases hy with ⟨m, mp, hy⟩
-    use m*n
+    use m * n
     have pos : m * n > 0 := by positivity
     have eq1 : (x * y) ^ (m * n) = 1 := by
       calc
