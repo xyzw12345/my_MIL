@@ -88,12 +88,20 @@ noncomputable example {G : Type*} [Semigroup G] [h_nonempty : Nonempty G] (h : �
     have hh1 : g1 * (i * g * i) * g1 = g1 := fun_is_pairing (i * g * i) g1 this
     have hh2 : i * g1 * i = g1 := by
       apply ExistsUnique.unique (h (i * g * i)) _ this
+      -- nth_rw 2 [← hi] at this
+      -- nth_rw 4 [← hi] at this
+      -- group at this
+      -- group
+      -- exact this
       rw [← mul_assoc, mul_assoc i g _, mul_assoc i (g * i) _, mul_assoc, mul_assoc g i _, ← mul_assoc i (i * g1) _, ← mul_assoc i i g1, hi, ← mul_assoc i g (i * g1 * i), mul_assoc i g1 i, ← mul_assoc (i * g) , mul_assoc (i * g * i), mul_assoc g1 i _, ← mul_assoc i (i * g), ← mul_assoc i i _, hi, ← mul_assoc (i * g * i), ← mul_assoc i g i, this]
     have hh3 : (i * g1 * i) * (i * g * i) * (i * g1 * i) = (i * g1 * i) := by rw [hh2, hh1]
     have hh4 : i * g * i = g := by
       apply ExistsUnique.unique (h (i * g1 * i)) hh3 _
       nth_rw 2 [← hi]
       nth_rw 4 [← hi]
+      -- group at hh3
+      -- group
+      -- exact hh3
       rw [mul_assoc i i g1, mul_assoc i (i * g1), ← mul_assoc, ← hh3]
       congr 1
       rw [← mul_assoc (i * g1) i i, mul_assoc _ g i, mul_assoc _ i (g * i), ← mul_assoc i g i]
@@ -102,12 +110,14 @@ noncomputable example {G : Type*} [Semigroup G] [h_nonempty : Nonempty G] (h : �
       nth_rw 2 [← hi]
       rw [← hh3]
       congr 1
+      -- group
       rw [← mul_assoc (i * g1) i i, mul_assoc _ g i, mul_assoc _ i (g * i), ← mul_assoc i g i]
     have hh6 : i * g * i = i * g := by
       apply ExistsUnique.unique (h (i * g1 * i)) hh3 _
       nth_rw 4 [← hi]
+      nth_rw 2 [← hh3]
+      -- group
       rw [mul_assoc (i * i) g1 i, mul_assoc i i (g1 * i), ← mul_assoc _ i (i * (g1 * i)), ← mul_assoc i g1 i]
-      nth_rw 3 [← hh3]
       congr 1
       rw [mul_assoc _ (i * g) i]
     exact ⟨Eq.trans hh6.symm hh4, Eq.trans hh5.symm hh4⟩
