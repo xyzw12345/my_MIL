@@ -174,7 +174,10 @@ noncomputable example {G : Type*} [Semigroup G] [h_nonempty : Nonempty G] (h : �
       -- group at this
       -- group
       -- exact this
-      rw [← mul_assoc, mul_assoc i g _, mul_assoc i (g * i) _, mul_assoc, mul_assoc g i _, ← mul_assoc i (i * g1) _, ← mul_assoc i i g1, hi, ← mul_assoc i g (i * g1 * i), mul_assoc i g1 i, ← mul_assoc (i * g) , mul_assoc (i * g * i), mul_assoc g1 i _, ← mul_assoc i (i * g), ← mul_assoc i i _, hi, ← mul_assoc (i * g * i), ← mul_assoc i g i, this]
+      rw [← mul_assoc, mul_assoc i g _, mul_assoc i (g * i) _, mul_assoc, mul_assoc g i _,
+       ← mul_assoc i (i * g1) _, ← mul_assoc i i g1, hi, ← mul_assoc i g (i * g1 * i),
+       mul_assoc i g1 i, ← mul_assoc (i * g), mul_assoc (i * g * i), mul_assoc g1 i _,
+       ← mul_assoc i (i * g), ← mul_assoc i i _, hi, ← mul_assoc (i * g * i), ← mul_assoc i g i, this]
     have hh3 : (i * g1 * i) * (i * g * i) * (i * g1 * i) = (i * g1 * i) := by rw [hh2, hh1]
     have hh4 : i * g * i = g := by
       apply ExistsUnique.unique (h (i * g1 * i)) hh3 _

@@ -12,7 +12,7 @@ theorem bool_ring1 {R : Type*} [Ring R] (h : ∀ a : R, a * a = a) : ∀ a : R, 
   rw [h (a + a)] at h1
   calc
     _= a + a + a + a + (-a) + (-a) + (-a) := by simp only [add_neg_cancel_right]
-    _= a + a + (-a) + (-a) + (-a) := by rw [←h1]
+    _= a + a + (-a) + (-a) + (-a) := by rw [← h1]
     _=_ := by simp only [add_neg_cancel_right, add_right_neg, zero_add]
 
 def bool_ring2 {R : Type*} [hR : Ring R] (h : ∀ a : R, a * a = a) : CommRing R := {
@@ -38,8 +38,8 @@ example {R : Type*} [hR : Ring R] (h : ∀ a : R, a * a * a = a) : CommRing R :=
     have h1: b * a * a + a * b * a + b * b * a + a * a * b + b * a * b + a * b * b = 0 := by
       calc
         _= a + b * a * a + a * b * a + b * b * a + a * a * b + b * a * b + a * b * b + b + (-a) + (-b) := by abel
-        _= a * a * a + b * a * a + a * b * a + b * b * a + a * a * b + b * a * b + a * b * b + b * b * b + (-a) + (-b) := by rw[h a, h b]
-        _= (a + b) * (a + b) * (a + b) + (-a) + (-b) := by simp [add_mul, mul_add]; abel
+        _= a * a * a + b * a * a + a * b * a + b * b * a + a * a * b + b * a * b + a * b * b + b * b * b + (-a) + (-b) := by rw [h a, h b]
+        _= (a + b) * (a + b) * (a + b) + (-a) + (-b) := by simp only [mul_add, add_mul, add_left_inj]; abel
         _=_ := by simp only [h (a + b), add_neg_cancel_comm, add_right_neg]
     have h2: -(b * a * a) + -(a * b * a) + b * b * a + -(a * a * b) + b * a * b + a * b * b = 0 := by
       calc
@@ -96,7 +96,24 @@ end Calculations_in_Rings
 
 
 section Dihedral_Groups
+-- The examples are from Mathlib.GroupTheory.SpecificGroups.Dihedral
+variable (n : ℕ)
+#check DihedralGroup n
 
+#check DihedralGroup.r_mul_r
+#check DihedralGroup.r_mul_sr
+#check DihedralGroup.sr_mul_r
+#check DihedralGroup.sr_mul_sr
+#check DihedralGroup.one_def
 
+#check ZMod.val
+
+theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by sorry
+
+theorem orderOf_r [NeZero n] (i : ZMod n) : orderOf (DihedralGroup.r i : DihedralGroup n) = n / Nat.gcd n i.val := by sorry
+
+theorem card_commute_odd (hn : Odd n) : Nat.card { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } = n * (n + 3) := by sorry
+
+theorem card_commute_even (hn : Even n) : Nat.card { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } = n * (n + 6) := by sorry
 
 end Dihedral_Groups
