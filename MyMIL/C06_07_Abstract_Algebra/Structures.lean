@@ -357,8 +357,20 @@ section subgroup
 #check Subgroup
 -- https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Subgroup/Basic.html#Subgroup
 
+#check Subgroup
+-- https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Subgroup/Basic.html#Subgroup
+
+#check Subgroup.ext
+
+variable (G : Type*) [Group G] (H : Subgroup G) (K : Subgroup G)
+
+-- The subgroup `H` is contained in the subgroup `K`.
+#check H ≤ K
+
 -- The intersection of two subgroups.
-example (G : Type*) [Group G] (H : Subgroup G) (K : Subgroup G) : Subgroup G := H ⊓ K
+#check H ⊓ K
+
+example (G : Type*) [Group G] (H : Subgroup G) (K : Subgroup G) : H ⊓ K = H ↔ H ≤ K := sorry
 
 /-- If `H` is a subgroup of `G` and `K` is a subgroup of `H`, then `K` can be viewed as a subgroup
 of `G`. -/
