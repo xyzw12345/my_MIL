@@ -1,38 +1,94 @@
 import Mathlib
 
-section Axioms_of_Groups
+section Basic_Calculations
 
-variable {G : Type*} [Group G]
+example {G : Type*} [Group G] (g : G) (h : ∃ f : G, f * g * f⁻¹ = 1) : g = 1 := by
+  rcases h with ⟨f, hf⟩
+  have h1 : f⁻¹ * (f * g * f⁻¹) * f = 1 := by simp only [hf, mul_one, mul_left_inv]
+  have h2 : f⁻¹ * (f * g * f⁻¹) * f = g := by group
+  rw [← h2, h1]
 
-#check (mul_assoc : ∀ a b c : G, a * b * c = a * (b * c))
-#check (one_mul : ∀ a : G, 1 * a = a)
-#check (mul_left_inv : ∀ a : G, a⁻¹ * a = 1)
 
-namespace MyGroup
+example {G : Type*} [Group G] (f g h : G) : ∃ x : G, f * x * g = h := by
+  use f⁻¹ * h * g⁻¹
+  group
 
-theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
-  rw [← one_mul (a * a⁻¹)]
-  nth_rw 1 [← mul_left_inv (a * a⁻¹)]
-  rw [mul_assoc, mul_assoc, ← mul_assoc a⁻¹, mul_left_inv, one_mul, mul_left_inv]
+example {G : Type*} [Group G] (x y : G) : x * y * x⁻¹ * y⁻¹ = 1 ↔ x * y = y * x := by
+  constructor
+  · intro h
+    have : x * y * x⁻¹ * y⁻¹ * y * x = y * x := by
+      simp only [h, one_mul]
+    simp only [inv_mul_cancel_right, inv_mul_cancel_right] at this
+    exact this
+  · intro h
+    simp only [h, mul_inv_cancel_right, mul_right_inv]
 
-theorem mul_one (a : G) : a * 1 = a := by
-  rw [← mul_left_inv a, ← mul_assoc, mul_right_inv a, one_mul]
+end Basic_Calculations
 
-theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
-  rw [← mul_one (b⁻¹ * a⁻¹), ← mul_right_inv (a * b), ← mul_assoc, mul_assoc b⁻¹, ← mul_assoc a⁻¹, mul_left_inv, one_mul, mul_left_inv, one_mul]
+section How_to_Define_a_Group
 
-end MyGroup
-
-end Axioms_of_Groups
-
-section How_To_Define_a_Group
-
---
 -- Things introduced here will be further elaborated later this week.
 
-end How_To_Define_a_Group
+def RootsOfUnity : Set ℂ := {x | ∃ n : ℕ, n > 0 ∧ x ^ n = 1}
 
-section From_SemiGroup_To_Group
+noncomputable instance : Group (RootsOfUnity) where
+  mul := by
+    intro ⟨x, hx⟩ ⟨y, hy⟩
+    use x * y
+    rcases hx with ⟨n, np, hx⟩
+    rcases hy with ⟨m, mp, hy⟩
+    use m * n
+    have pos : m * n > 0 := by positivity
+    have eq1 : (x * y) ^ (m * n) = 1 := by
+      calc
+        _= (x ^ n) ^ m * (y ^ m) ^ n := by ring
+        _= 1 ^ m * 1 ^ n := by simp [hx, hy]
+        _=_ := by simp only [one_pow, mul_one]
+    simp only [gt_iff_lt, pos, eq1, and_self]
+  mul_assoc := by
+    intro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩
+    apply Subtype.val_inj.mp
+    show a * b * c = a * (b * c)
+    rw [mul_assoc]
+  one := by
+    use 1, 1
+    simp only [gt_iff_lt, zero_lt_one, pow_one, and_self]
+  one_mul := by
+    intro ⟨a, ha⟩
+    apply Subtype.val_inj.mp
+    show 1 * a = a
+    simp only [one_mul]
+  mul_one := by
+    intro ⟨a, ha⟩
+    apply Subtype.val_inj.mp
+    show a * 1 = a
+    simp only [mul_one]
+  inv := by
+    intro ⟨a, ha⟩
+    use 1 / a
+    rcases ha with ⟨n, np, ha⟩
+    use n
+    have eq1 : (1 / a) ^ n = 1 := by
+      calc
+        _= 1 / (a ^ n) := by ring
+        _= 1 := by simp only [ha, ne_eq, one_ne_zero, not_false_eq_true, div_self]
+    simp only [gt_iff_lt, np, eq1, and_true]
+  mul_left_inv := by
+    intro ⟨a, ha⟩
+    apply Subtype.val_inj.mp
+    show 1 / a * a = 1
+    apply one_div_mul_cancel
+    by_contra h
+    rcases ha with ⟨n, np, ha⟩
+    rw [h] at ha
+    have : (0 : ℂ)  ^ n = (0 : ℂ) := by exact Mathlib.Tactic.Ring.zero_pow np
+    rw [ha] at this
+    absurd this
+    simp only [one_ne_zero, not_false_eq_true]
+
+end How_to_Define_a_Group
+
+section From_SemiGroup_to_Group
 
 noncomputable example {G : Type*} [Semigroup G] [h_nonempty : Nonempty G] (h : ∀ a b : G, (∃ x : G, x * a = b) ∧ (∃ y : G, a * y = b)) : Group G := by
   let u := Classical.choice h_nonempty
@@ -88,12 +144,23 @@ noncomputable example {G : Type*} [Semigroup G] [h_nonempty : Nonempty G] (h : �
     have hh1 : g1 * (i * g * i) * g1 = g1 := fun_is_pairing (i * g * i) g1 this
     have hh2 : i * g1 * i = g1 := by
       apply ExistsUnique.unique (h (i * g * i)) _ this
-      rw [← mul_assoc, mul_assoc i g _, mul_assoc i (g * i) _, mul_assoc, mul_assoc g i _, ← mul_assoc i (i * g1) _, ← mul_assoc i i g1, hi, ← mul_assoc i g (i * g1 * i), mul_assoc i g1 i, ← mul_assoc (i * g) , mul_assoc (i * g * i), mul_assoc g1 i _, ← mul_assoc i (i * g), ← mul_assoc i i _, hi, ← mul_assoc (i * g * i), ← mul_assoc i g i, this]
+      -- nth_rw 2 [← hi] at this
+      -- nth_rw 4 [← hi] at this
+      -- group at this
+      -- group
+      -- exact this
+      rw [← mul_assoc, mul_assoc i g _, mul_assoc i (g * i) _, mul_assoc, mul_assoc g i _,
+       ← mul_assoc i (i * g1) _, ← mul_assoc i i g1, hi, ← mul_assoc i g (i * g1 * i),
+       mul_assoc i g1 i, ← mul_assoc (i * g), mul_assoc (i * g * i), mul_assoc g1 i _,
+       ← mul_assoc i (i * g), ← mul_assoc i i _, hi, ← mul_assoc (i * g * i), ← mul_assoc i g i, this]
     have hh3 : (i * g1 * i) * (i * g * i) * (i * g1 * i) = (i * g1 * i) := by rw [hh2, hh1]
     have hh4 : i * g * i = g := by
       apply ExistsUnique.unique (h (i * g1 * i)) hh3 _
       nth_rw 2 [← hi]
       nth_rw 4 [← hi]
+      -- group at hh3
+      -- group
+      -- exact hh3
       rw [mul_assoc i i g1, mul_assoc i (i * g1), ← mul_assoc, ← hh3]
       congr 1
       rw [← mul_assoc (i * g1) i i, mul_assoc _ g i, mul_assoc _ i (g * i), ← mul_assoc i g i]
@@ -102,12 +169,14 @@ noncomputable example {G : Type*} [Semigroup G] [h_nonempty : Nonempty G] (h : �
       nth_rw 2 [← hi]
       rw [← hh3]
       congr 1
+      -- group
       rw [← mul_assoc (i * g1) i i, mul_assoc _ g i, mul_assoc _ i (g * i), ← mul_assoc i g i]
     have hh6 : i * g * i = i * g := by
       apply ExistsUnique.unique (h (i * g1 * i)) hh3 _
       nth_rw 4 [← hi]
+      nth_rw 2 [← hh3]
+      -- group
       rw [mul_assoc (i * i) g1 i, mul_assoc i i (g1 * i), ← mul_assoc _ i (i * (g1 * i)), ← mul_assoc i g1 i]
-      nth_rw 3 [← hh3]
       congr 1
       rw [mul_assoc _ (i * g) i]
     exact ⟨Eq.trans hh6.symm hh4, Eq.trans hh5.symm hh4⟩
@@ -133,3 +202,5 @@ noncomputable example {G : Type*} [Semigroup G] [h_nonempty : Nonempty G] (h : �
       rw [← (h_idem_is_identity e e_idem e').1, (h_idem_is_identity e' this e).2]
     )
   }
+
+end From_SemiGroup_to_Group

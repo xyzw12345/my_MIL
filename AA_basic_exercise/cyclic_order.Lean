@@ -5,11 +5,11 @@ open Subgroup MonoidHom
 
 --Cyclic group is communitive
 example {G : Type*} [Group G] (h : IsCyclic G) (a b : G) : a * b = b * a := by
-  rcases h with ⟨g,hg⟩
+  rcases h with ⟨g, hg⟩
   have Ha : ∃ m : ℤ , g ^ m = a := by apply Subgroup.mem_zpowers_iff.mp (hg a)
   have Hb : ∃ n : ℤ , g ^ n = b := by apply Subgroup.mem_zpowers_iff.mp (hg b)
-  rcases Ha with ⟨m,ha⟩
-  rcases Hb with ⟨n,hb⟩
+  rcases Ha with ⟨m, ha⟩
+  rcases Hb with ⟨n, hb⟩
   rw [← ha, ← hb]
   have mul₁ : g ^ m * g ^ n = g ^ (m + n) := by exact (zpow_add g m n).symm
   have mul₂ : g ^ n * g ^ m = g ^ (n + m) := by exact (zpow_add g n m).symm
@@ -19,11 +19,11 @@ example {G : Type*} [Group G] (h : IsCyclic G) (a b : G) : a * b = b * a := by
 
 --Cyclic group is communitive , another possible solution
 example {G : Type*} [Group G] (h : IsCyclic G) (a b : G) : a * b = b * a := by
-  rcases h with ⟨g,hg⟩
+  rcases h with ⟨g, hg⟩
   have Ha : ∃ m : ℤ , g ^ m = a := by apply Subgroup.mem_zpowers_iff.mp (hg a)
   have Hb : ∃ n : ℤ , g ^ n = b := by apply Subgroup.mem_zpowers_iff.mp (hg b)
-  rcases Ha with ⟨m,ha⟩
-  rcases Hb with ⟨n,hb⟩
+  rcases Ha with ⟨m, ha⟩
+  rcases Hb with ⟨n, hb⟩
   rw [← ha, ← hb]
   calc
     _= g ^ (m + n) := by exact Eq.symm (zpow_add g m n)
@@ -34,10 +34,10 @@ example {G : Type*} [Group G] (h : IsCyclic G) (a b : G) : a * b = b * a := by
 
 --dierct product
 example {G H : Type*} [Group G] [Group H] (h : IsCyclic (G × H) ) : IsCyclic G := by
-  rcases h with ⟨a,ha⟩
+  rcases h with ⟨a, ha⟩
   use a.1
   intro x
-  rcases (ha (x,1)) with ⟨n,hn⟩
+  rcases (ha (x, 1)) with ⟨n, hn⟩
   use n
   calc
     _=(a ^ n).1 := rfl
