@@ -1,30 +1,5 @@
 import Mathlib
 
-section Axioms_of_Groups
-
-variable {G : Type*} [Group G]
-
-#check (mul_assoc : ∀ a b c : G, a * b * c = a * (b * c))
-#check (one_mul : ∀ a : G, 1 * a = a)
-#check (mul_left_inv : ∀ a : G, a⁻¹ * a = 1)
-
-namespace MyGroup
-
-theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
-  rw [← one_mul (a * a⁻¹)]
-  nth_rw 1 [← mul_left_inv (a * a⁻¹)]
-  rw [mul_assoc, mul_assoc, ← mul_assoc a⁻¹, mul_left_inv, one_mul, mul_left_inv]
-
-theorem mul_one (a : G) : a * 1 = a := by
-  rw [← mul_left_inv a, ← mul_assoc, mul_right_inv a, one_mul]
-
-theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
-  rw [← mul_one (b⁻¹ * a⁻¹), ← mul_right_inv (a * b), ← mul_assoc, mul_assoc b⁻¹, ← mul_assoc a⁻¹, mul_left_inv, one_mul, mul_left_inv, one_mul]
-
-end MyGroup
-
-end Axioms_of_Groups
-
 section Basic_Calculations
 
 example {G : Type*} [Group G] (g : G) (h : ∃ f : G, f * g * f⁻¹ = 1) : g = 1 := by
@@ -74,7 +49,7 @@ noncomputable instance : Group (RootsOfUnity) where
     intro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩
     apply Subtype.val_inj.mp
     show a * b * c = a * (b * c)
-    ring
+    rw [mul_assoc]
   one := by
     use 1, 1
     simp only [gt_iff_lt, zero_lt_one, pow_one, and_self]
@@ -97,7 +72,7 @@ noncomputable instance : Group (RootsOfUnity) where
       calc
         _= 1 / (a ^ n) := by ring
         _= 1 := by simp only [ha, ne_eq, one_ne_zero, not_false_eq_true, div_self]
-    simp only [gt_iff_lt, np, eq1,and_true]
+    simp only [gt_iff_lt, np, eq1, and_true]
   mul_left_inv := by
     intro ⟨a, ha⟩
     apply Subtype.val_inj.mp
@@ -174,7 +149,10 @@ noncomputable example {G : Type*} [Semigroup G] [h_nonempty : Nonempty G] (h : �
       -- group at this
       -- group
       -- exact this
-      rw [← mul_assoc, mul_assoc i g _, mul_assoc i (g * i) _, mul_assoc, mul_assoc g i _, ← mul_assoc i (i * g1) _, ← mul_assoc i i g1, hi, ← mul_assoc i g (i * g1 * i), mul_assoc i g1 i, ← mul_assoc (i * g) , mul_assoc (i * g * i), mul_assoc g1 i _, ← mul_assoc i (i * g), ← mul_assoc i i _, hi, ← mul_assoc (i * g * i), ← mul_assoc i g i, this]
+      rw [← mul_assoc, mul_assoc i g _, mul_assoc i (g * i) _, mul_assoc, mul_assoc g i _,
+       ← mul_assoc i (i * g1) _, ← mul_assoc i i g1, hi, ← mul_assoc i g (i * g1 * i),
+       mul_assoc i g1 i, ← mul_assoc (i * g), mul_assoc (i * g * i), mul_assoc g1 i _,
+       ← mul_assoc i (i * g), ← mul_assoc i i _, hi, ← mul_assoc (i * g * i), ← mul_assoc i g i, this]
     have hh3 : (i * g1 * i) * (i * g * i) * (i * g1 * i) = (i * g1 * i) := by rw [hh2, hh1]
     have hh4 : i * g * i = g := by
       apply ExistsUnique.unique (h (i * g1 * i)) hh3 _
