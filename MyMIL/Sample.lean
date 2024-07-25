@@ -6,38 +6,6 @@ This is the sample file of formalizing abstract algebra exercises.
 
 section
 
--- ID: 392 (from Abstract Algebra, 3rd Edition, David S. Dummit, Richard M. Foote)
-
-/-- `1` is the generator of ℤ⧸nℤ since for every $m$ in ℤ⧸nℤ, $m % n = m • (1 % n)$. -/
-example (n : ℕ) : IsAddCyclic (ZMod n) where
-  exists_generator := by
-    use 1
-    match n with
-      | 0 => exact fun m ↦ ⟨m, mul_one m⟩
-      | n + 1 =>
-        intro ⟨m, h⟩
-        use m
-        show m • 1 = (⟨m, h⟩ : Fin (n + 1))
-        induction m with
-          | zero =>
-            simp only [zero_smul, Fin.zero_eta]
-          | succ m hm =>
-            show m • 1 + 1 = (⟨m + 1, h⟩ : Fin (n + 1))
-            simp only [hm (Nat.lt_trans (lt_add_one m) h), Fin.add_def, Fin.val_one',
-              Nat.add_mod_mod, Fin.mk.injEq, Nat.mod_succ_eq_iff_lt.mpr h]
-
-/-- The relation of `1` is $n • 1 = 0$ since $(n • 1) % n = n % n = 0 $. -/
-example (n : ℕ) : n • 1 = (0 : ZMod n) := by
-  match n with
-    | 0 => simp only [zero_smul]
-    | n + 1 => simp only [nsmul_eq_mul, CharP.cast_eq_zero, mul_one]
-
-end
-
-
-
-section
-
 -- ID: 415 (from Abstract Algebra, 3rd Edition, David S. Dummit, Richard M. Foote)
 
 open DihedralGroup
@@ -287,18 +255,5 @@ example {G : Type*} [Group G] {n : ℕ} (hn : n ≠ 0) (hc : (center G).index = 
   · rw [← hc]
     exact Finite.card_le_of_injective' hf (Mathlib.Tactic.Contrapose.mtr (fun _ ↦ hcn))
   · exact fun h ↦ hcn (Finite.card_eq_zero_of_injective hf h)
-
-end
-
-
-
-section
-
-open Polynomial
-
--- The degree of the polymial $X^4 - X -1$ is equal to $4$.
-example : natDegree (X ^ 4 - X - 1 : Polynomial ℤ) = 4 := by
-  compute_degree
-  · exact Int.zero_ne_one.symm
 
 end
