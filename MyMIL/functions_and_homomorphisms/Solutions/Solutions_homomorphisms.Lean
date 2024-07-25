@@ -193,6 +193,21 @@ def inviso {G : Type*} [CommGroup G] : G ≃* G where
       _= y⁻¹ * x⁻¹ := by group
       _=_ := by rw [mul_comm]
 
+def inviso' {G : Type*} [hG : CommGroup G] : G ≃* G := {
+  invhom with
+  invFun := by
+    intro x
+    use x⁻¹
+  left_inv := by
+    intro x
+    show (x⁻¹)⁻¹ = x
+    group
+  right_inv := by
+    intro x
+    show (x⁻¹)⁻¹ = x
+    group
+}
+
 noncomputable def iso {G H : Type*} [Group G] [Group H] (α : G →* H) (surj : Function.Surjective α) (inj : Function.Injective α) : G ≃* H where
   toFun := by
     intro x

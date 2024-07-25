@@ -52,7 +52,6 @@ section From_SemiGroup_to_Group
 
 noncomputable example {G : Type*} [Semigroup G] [h_nonempty : Nonempty G] (h : ∀ a b : G, (∃ x : G, x * a = b) ∧ (∃ y : G, a * y = b)) : Group G := by
   let u := Classical.choice h_nonempty
-  -- rcases h_nonempty with ⟨u⟩
   let e1 := Classical.choose (h u u).1
   have h_e1 : e1 * u = u := by
     exact Classical.choose_spec (h u u).1

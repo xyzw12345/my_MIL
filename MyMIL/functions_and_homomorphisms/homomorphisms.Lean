@@ -51,6 +51,13 @@ def im_subgroup {G H : Type*} [Group G] [Group H] (α : G →* H) (G' : Subgroup
 
 def im_subgroup' {G H : Type*} [Group G] [Group H] (α : G →* H) (G' : Subgroup G) : Subgroup H := sorry
 
+def inviso' {G : Type*} [hG : CommGroup G] : G ≃* G := {
+  invhom with
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
+}
+
 --isomorphism
 def inviso {G : Type*} [CommGroup G] : G ≃* G where
   toFun := by
